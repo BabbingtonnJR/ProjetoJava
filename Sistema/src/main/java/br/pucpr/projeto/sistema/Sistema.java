@@ -1,5 +1,7 @@
 package br.pucpr.projeto.sistema;
 
+import java.util.List;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -31,10 +33,31 @@ public class Sistema extends Application {
                 "000.000.000-00"
         );
 
-// Adiciona no repositorio dos usuarios
+        //adiciona no repositorio dos usuarios
         if (RepositorioUsuarios.administradores.isEmpty()) {
             RepositorioUsuarios.administradores.add(admin);
         }
+
+        List<String[]> lojasCSV = CSVUtils.lerCSV("lojas.csv");
+        for (String[] dados : lojasCSV) {
+            Loja loja = new Loja(
+                    RepositorioUsuarios.lojas.size() + 1,
+                    dados[0], dados[1], dados[2], dados[3], dados[4],
+                    dados[5], dados[6], dados[7], dados[8], dados[9]
+            );
+            RepositorioUsuarios.lojas.add(loja);
+        }
+
+        List<String[]> clienteCSV = CSVUtils.lerCSV("clientes.csv");
+        for (String[] dados : clienteCSV) {
+            Cliente cliente = new Cliente(
+                    RepositorioUsuarios.clientes.size() + 1,
+                    dados[0], dados[1], dados[2], dados[3], dados[4],
+                    dados[5], dados[6], dados[7], dados[8]
+            );
+            RepositorioUsuarios.clientes.add(cliente);
+        }
+
 
         launch();
     }

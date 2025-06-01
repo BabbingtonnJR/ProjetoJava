@@ -148,9 +148,46 @@ public class TelaCadastro{
 
         Button cadastrar = new Button("Cadastrar");
 
-        cadastrar.setOnAction(e ->{
+        cadastrar.setOnAction(e -> {
+            if (!senha.getText().equals(repSenha.getText())) {
+                System.out.println("As senhas não coincidem!");
+                return;
+            }
 
+            Cliente novoCliente = new Cliente(
+                    RepositorioUsuarios.clientes.size() + 1,
+                    nome.getText(),
+                    sobrenome.getText(),
+                    email.getText(),
+                    login.getText(),
+                    senha.getText(),
+                    telefone.getText(),
+                    endereco.getText(),
+                    numero.getText(),
+                    cpf.getText()
+            );
+
+            RepositorioUsuarios.clientes.add(novoCliente);
+
+            // Salva no CSV
+            String linhaCSV = String.join(";",
+                    novoCliente.getNome(),
+                    novoCliente.getSobrenome(),
+                    novoCliente.getEmail(),
+                    novoCliente.getLogin(),
+                    novoCliente.getSenha(),
+                    novoCliente.getTelefone(),
+                    novoCliente.getEndereco(),
+                    novoCliente.getNumero(),
+                    novoCliente.getCpf()
+            );
+
+            CSVUtils.escreverLinha("clientes.csv", linhaCSV);
+
+            System.out.println("Cadastro feito com sucesso!");
+            stage.close();
         });
+
 
         Button voltar = new Button("Voltar");
 
@@ -291,10 +328,23 @@ public class TelaCadastro{
 
             RepositorioUsuarios.lojas.add(novaLoja);
 
+            //salva no CSV
+            String linhaCSV = String.join(";",
+                    novaLoja.getNome(),
+                    novaLoja.getSobrenome(),
+                    novaLoja.getEmail(),
+                    novaLoja.getLogin(),
+                    novaLoja.getSenha(),
+                    novaLoja.getTelefone(),
+                    novaLoja.getEndereco(),
+                    novaLoja.getNumero(),
+                    novaLoja.getLoja(),
+                    novaLoja.getCnpj()
+            );
+
+            CSVUtils.escreverLinha("lojas.csv", linhaCSV);
+
             System.out.println("Loja cadastrada com sucesso!");
-
-            Button voltar = new Button("Voltar");
-
             stage.close();
         });
 
