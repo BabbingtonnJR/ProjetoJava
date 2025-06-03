@@ -55,7 +55,8 @@ public class TelaAdministrador {
             Button excluir = new Button("Excluir");
             excluir.setOnAction(e -> {
                 RepositorioUsuarios.clientes.remove(cliente);
-                CSVUtils.salvarClienteCSV(); // atualiza o CSV após remover
+                PersistenciaUtils.salvarClientesDat();
+                // atualiza o dat apos remover
                 stage.close();
                 telaInicial(); // recarrega a tela
             });
@@ -78,7 +79,7 @@ public class TelaAdministrador {
             Button excluir = new Button("Excluir");
             excluir.setOnAction(e -> {
                 RepositorioUsuarios.lojas.remove(loja);
-                CSVUtils.salvarLojaCSV(); // atualiza o CSV após remover
+                PersistenciaUtils.salvarLojasDat();
                 stage.close();
                 telaInicial();
             });
@@ -115,7 +116,7 @@ public class TelaAdministrador {
             TextField sobrenome = new TextField();
             TextField login = new TextField();
             TextField email = new TextField();
-            TextField senha = new TextField();
+            PasswordField senha = new PasswordField();
             TextField telefone = new TextField();
             TextField endereco = new TextField();
             TextField numero = new TextField();
@@ -143,7 +144,8 @@ public class TelaAdministrador {
                 cliente.setNumero(numero.getText());
                 cliente.setCpf(cpf.getText());
 
-                CSVUtils.salvarClienteCSV(); //atualiza arquivo CSV
+                PersistenciaUtils.salvarClientesDat();
+                //atualiza arquivo dat
                 editarStage.close();
                 telaInicial();
             });
@@ -170,7 +172,7 @@ public class TelaAdministrador {
             TextField sobrenome = new TextField();
             TextField login = new TextField();
             TextField email = new TextField();
-            TextField senha = new TextField();
+            PasswordField senha = new PasswordField();
             TextField telefone = new TextField();
             TextField endereco = new TextField();
             TextField numero = new TextField();
@@ -200,7 +202,8 @@ public class TelaAdministrador {
                 loja.setNumero(numero.getText());
                 loja.setCnpj(cnpj.getText());
 
-                CSVUtils.salvarLojaCSV(); //atualiza arquivo CSV
+                PersistenciaUtils.salvarLojasDat();
+                //atualiza arquivo dat
                 editarStage.close();
                 telaInicial();
             });
@@ -316,12 +319,12 @@ public class TelaAdministrador {
         login.setPrefHeight(30);
         login.setMaxWidth(250);
         login.setAlignment(Pos.CENTER);
-        TextField senha = new TextField();
+        PasswordField senha = new PasswordField();
         senha.setPrefWidth(250);
         senha.setPrefHeight(30);
         senha.setMaxWidth(250);
         senha.setAlignment(Pos.CENTER);
-        TextField repSenha = new TextField();
+        PasswordField repSenha = new PasswordField();
         repSenha.setPrefWidth(250);
         repSenha.setPrefHeight(30);
         repSenha.setMaxWidth(250);
@@ -352,21 +355,9 @@ public class TelaAdministrador {
 
             RepositorioUsuarios.lojas.add(novaLoja);
 
-            //salva no CSV
-            String linhaCSV = String.join(";",
-                    novaLoja.getNome(),
-                    novaLoja.getSobrenome(),
-                    novaLoja.getEmail(),
-                    novaLoja.getLogin(),
-                    novaLoja.getSenha(),
-                    novaLoja.getTelefone(),
-                    novaLoja.getEndereco(),
-                    novaLoja.getNumero(),
-                    novaLoja.getLoja(),
-                    novaLoja.getCnpj()
-            );
+            //salva no dat
+            PersistenciaUtils.salvarLojasDat();
 
-            CSVUtils.escreverLinha("lojas.csv", linhaCSV);
 
             System.out.println("Loja cadastrada com sucesso!");
             addStage.close();
@@ -469,12 +460,12 @@ public class TelaAdministrador {
         login.setPrefHeight(30);
         login.setMaxWidth(250);
         login.setAlignment(Pos.CENTER);
-        TextField senha = new TextField();
+        PasswordField senha = new PasswordField();
         senha.setPrefWidth(250);
         senha.setPrefHeight(30);
         senha.setMaxWidth(250);
         senha.setAlignment(Pos.CENTER);
-        TextField repSenha = new TextField();
+        PasswordField repSenha = new PasswordField();
         repSenha.setPrefWidth(250);
         repSenha.setPrefHeight(30);
         repSenha.setMaxWidth(250);
@@ -503,20 +494,8 @@ public class TelaAdministrador {
 
             RepositorioUsuarios.clientes.add(novoCliente);
 
-            // Salva no CSV
-            String linhaCSV = String.join(";",
-                    novoCliente.getNome(),
-                    novoCliente.getSobrenome(),
-                    novoCliente.getEmail(),
-                    novoCliente.getLogin(),
-                    novoCliente.getSenha(),
-                    novoCliente.getTelefone(),
-                    novoCliente.getEndereco(),
-                    novoCliente.getNumero(),
-                    novoCliente.getCpf()
-            );
-
-            CSVUtils.escreverLinha("clientes.csv", linhaCSV);
+            //salva no dat
+            PersistenciaUtils.salvarClientesDat();
 
             System.out.println("Cadastro feito com sucesso!");
             addStage.close();

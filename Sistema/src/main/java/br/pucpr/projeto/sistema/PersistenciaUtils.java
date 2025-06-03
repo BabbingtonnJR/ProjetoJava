@@ -1,0 +1,49 @@
+package br.pucpr.projeto.sistema;
+
+import java.io.*;
+import java.util.ArrayList;
+
+public class PersistenciaUtils {
+
+    //clientes
+    public static void salvarClientesDat() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("clientes.dat"))) {
+            out.writeObject(RepositorioUsuarios.clientes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void carregarClientesDat() {
+        File arquivo = new File("clientes.dat");
+        if (arquivo.exists()) {
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(arquivo))) {
+                RepositorioUsuarios.clientes = (ArrayList<Cliente>) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //lojas
+    public static void salvarLojasDat() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("lojas.dat"))) {
+            out.writeObject(RepositorioUsuarios.lojas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void carregarLojasDat() {
+        File arquivo = new File("lojas.dat");
+        if (arquivo.exists()) {
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(arquivo))) {
+                RepositorioUsuarios.lojas = (ArrayList<Loja>) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

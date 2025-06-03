@@ -1,8 +1,10 @@
 package br.pucpr.projeto.sistema;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Loja extends Usuario{
+public class Loja extends Usuario implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String loja;
     private String cnpj;
 

@@ -2,6 +2,7 @@ package br.pucpr.projeto.sistema;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -135,12 +136,12 @@ public class TelaCadastro{
         login.setPrefHeight(30);
         login.setMaxWidth(250);
         login.setAlignment(Pos.CENTER);
-        TextField senha = new TextField();
+        PasswordField senha = new PasswordField();
         senha.setPrefWidth(250);
         senha.setPrefHeight(30);
         senha.setMaxWidth(250);
         senha.setAlignment(Pos.CENTER);
-        TextField repSenha = new TextField();
+        PasswordField repSenha = new PasswordField();
         repSenha.setPrefWidth(250);
         repSenha.setPrefHeight(30);
         repSenha.setMaxWidth(250);
@@ -168,21 +169,7 @@ public class TelaCadastro{
             );
 
             RepositorioUsuarios.clientes.add(novoCliente);
-
-            // Salva no CSV
-            String linhaCSV = String.join(";",
-                    novoCliente.getNome(),
-                    novoCliente.getSobrenome(),
-                    novoCliente.getEmail(),
-                    novoCliente.getLogin(),
-                    novoCliente.getSenha(),
-                    novoCliente.getTelefone(),
-                    novoCliente.getEndereco(),
-                    novoCliente.getNumero(),
-                    novoCliente.getCpf()
-            );
-
-            CSVUtils.escreverLinha("clientes.csv", linhaCSV);
+            PersistenciaUtils.salvarClientesDat();
 
             System.out.println("Cadastro feito com sucesso!");
             stage.close();
@@ -292,12 +279,12 @@ public class TelaCadastro{
         login.setPrefHeight(30);
         login.setMaxWidth(250);
         login.setAlignment(Pos.CENTER);
-        TextField senha = new TextField();
+        PasswordField senha = new PasswordField();
         senha.setPrefWidth(250);
         senha.setPrefHeight(30);
         senha.setMaxWidth(250);
         senha.setAlignment(Pos.CENTER);
-        TextField repSenha = new TextField();
+        PasswordField repSenha = new PasswordField();
         repSenha.setPrefWidth(250);
         repSenha.setPrefHeight(30);
         repSenha.setMaxWidth(250);
@@ -327,22 +314,7 @@ public class TelaCadastro{
             );
 
             RepositorioUsuarios.lojas.add(novaLoja);
-
-            //salva no CSV
-            String linhaCSV = String.join(";",
-                    novaLoja.getNome(),
-                    novaLoja.getSobrenome(),
-                    novaLoja.getEmail(),
-                    novaLoja.getLogin(),
-                    novaLoja.getSenha(),
-                    novaLoja.getTelefone(),
-                    novaLoja.getEndereco(),
-                    novaLoja.getNumero(),
-                    novaLoja.getLoja(),
-                    novaLoja.getCnpj()
-            );
-
-            CSVUtils.escreverLinha("lojas.csv", linhaCSV);
+            PersistenciaUtils.salvarLojasDat();
 
             System.out.println("Loja cadastrada com sucesso!");
             stage.close();

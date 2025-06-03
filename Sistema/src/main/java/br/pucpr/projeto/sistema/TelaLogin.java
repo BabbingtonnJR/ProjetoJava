@@ -2,6 +2,7 @@ package br.pucpr.projeto.sistema;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
@@ -39,7 +40,7 @@ public class TelaLogin {
         senhatxt.setAlignment(Pos.CENTER);
 
         //senha
-        TextField senha = new TextField();
+        PasswordField senha = new PasswordField();
         senha.setPrefWidth(250);
         senha.setPrefHeight(30);
         senha.setMaxWidth(250);

@@ -1,8 +1,10 @@
 package br.pucpr.projeto.sistema;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Administrador extends Usuario{
+public class Administrador extends Usuario implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String cpf;
 
     public Administrador(int id, String nome, String sobrenome, String email, String login, String senha, String telefone, String endereco, String numero, String cpf) {
