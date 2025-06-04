@@ -6,12 +6,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TelaLoja {
-    private Loja loja; // pega loja logada
+    private Loja loja;
 
     public TelaLoja(Loja loja) {
         this.loja = loja;
@@ -26,38 +27,70 @@ public class TelaLoja {
         label.setAlignment(Pos.CENTER);
 
         Button btnCriarPromocao = new Button("Criar Promoção");
-        btnCriarPromocao.setOnAction(e -> abrirFormularioPromocao());
+        btnCriarPromocao.setOnAction(e -> abrirFormularioPromocao(stage));
 
         VBox layout = new VBox(20, label, btnCriarPromocao);
-        layout.setAlignment(Pos.CENTER);
+        layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
 
-        Scene scene = new Scene(layout, 600, 400);
+
+        Label promoTitulo = new Label("Suas promoções:");
+        promoTitulo.setFont(new Font("Arial", 16));
+        layout.getChildren().add(promoTitulo);
+
+        VBox listaPromocoes = new VBox(10);
+        for (Promocao promo : RepositorioUsuarios.promocoes) {
+            if (promo.getIdLoja() == loja.getId()) {
+                Label lblPromo = new Label(
+                        "Produto: " + promo.getNomeProduto()
+                                + " | De: R$" + promo.getPrecoInicial()
+                                + " por: R$" + promo.getPrecoPromocional()
+                                + " | Quantidade: " + promo.getQuantidade()
+                                + " | Tipo: " + promo.getTipo()
+                );
+
+                Button btnEditar = new Button("Editar");
+                btnEditar.setOnAction(e -> editarPromocao(promo)); // criar função se quiser
+
+                Button btnExcluir = new Button("Excluir");
+                btnExcluir.setOnAction(e -> {
+                    RepositorioUsuarios.promocoes.remove(promo);
+                    PersistenciaUtils.salvarPromocoesDat();
+                    stage.close();
+                    telaInicial(); // recarrega
+                });
+
+                HBox linha = new HBox(10, lblPromo, btnEditar, btnExcluir);
+                linha.setAlignment(Pos.CENTER_LEFT);
+                listaPromocoes.getChildren().add(linha);
+            }
+        }
+
+        layout.getChildren().add(listaPromocoes);
+
+        Scene scene = new Scene(layout, 1000, 600);
         stage.setScene(scene);
         stage.show();
     }
 
-    private void abrirFormularioPromocao() {
+    private void abrirFormularioPromocao(Stage stagePrincipal) {
         Stage formStage = new Stage();
         formStage.setTitle("Nova Promoção");
 
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
         TextField tfNome = new TextField();
-        tfNome.setPromptText("Nome do produto");
-
         TextField tfPrecoInicial = new TextField();
-        tfPrecoInicial.setPromptText("Preço original");
-
         TextField tfPrecoPromo = new TextField();
-        tfPrecoPromo.setPromptText("Preço promocional");
-
         TextField tfQuantidade = new TextField();
-        tfQuantidade.setPromptText("Quantidade");
-
         TextField tfTipo = new TextField();
-        tfTipo.setPromptText("Tipo da promoção");
+
+        Label msgLabel = new Label();
 
         Button btnSalvar = new Button("Salvar");
-        Label msgLabel = new Label();
+        Button voltar = new Button("Voltar");
 
         btnSalvar.setOnAction(ev -> {
             try {
@@ -69,27 +102,83 @@ public class TelaLoja {
 
                 Promocao nova = new Promocao(nome, loja.getId(), precoInicial, precoPromo, qtd, tipo);
                 RepositorioUsuarios.promocoes.add(nova);
-                PersistenciaUtils.salvarPromocoesDat(); // salva no arquivo
+                PersistenciaUtils.salvarPromocoesDat();
 
                 msgLabel.setText("Promoção criada com sucesso!");
                 limparCampos(tfNome, tfPrecoInicial, tfPrecoPromo, tfQuantidade, tfTipo);
+
+                formStage.close();
+                stagePrincipal.close();
+                telaInicial();
 
             } catch (NumberFormatException ex) {
                 msgLabel.setText("Erro: verifique os valores numéricos.");
             }
         });
 
-        VBox form = new VBox(10, tfNome, tfPrecoInicial, tfPrecoPromo, tfQuantidade, tfTipo, btnSalvar, msgLabel);
-        form.setAlignment(Pos.CENTER);
-        form.setPadding(new Insets(20));
+        voltar.setOnAction(e -> formStage.close());
 
-        formStage.setScene(new Scene(form, 300, 350));
+        layout.getChildren().addAll(
+                new Label("Nome do produto:"), tfNome,
+                new Label("Preço original:"), tfPrecoInicial,
+                new Label("Preço promocional:"), tfPrecoPromo,
+                new Label("Quantidade:"), tfQuantidade,
+                new Label("Tipo da promoção:"), tfTipo,
+                btnSalvar, voltar, msgLabel
+        );
+
+        formStage.setScene(new Scene(layout, 300, 415));
         formStage.show();
     }
+
 
     private void limparCampos(TextField... fields) {
         for (TextField tf : fields) {
             tf.clear();
         }
+    }
+
+    private void editarPromocao(Promocao promo) {
+        Stage editStage = new Stage();
+        editStage.setTitle("Editar Promoção");
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
+        TextField tfNome = new TextField(promo.getNomeProduto());
+        TextField tfPrecoInicial = new TextField(String.valueOf(promo.getPrecoInicial()));
+        TextField tfPrecoPromo = new TextField(String.valueOf(promo.getPrecoPromocional()));
+        TextField tfQuantidade = new TextField(String.valueOf(promo.getQuantidade()));
+        TextField tfTipo = new TextField(promo.getTipo());
+
+        Button salvar = new Button("Salvar");
+        Button voltar = new Button("Voltar");
+
+        salvar.setOnAction(e -> {
+                promo.setNomeProduto(tfNome.getText());
+                promo.setPrecoInicial(Double.parseDouble(tfPrecoInicial.getText()));
+                promo.setPrecoPromocional(Double.parseDouble(tfPrecoPromo.getText()));
+                promo.setQuantidade(Integer.parseInt(tfQuantidade.getText()));
+                promo.setTipo(tfTipo.getText());
+
+                PersistenciaUtils.salvarPromocoesDat();
+                editStage.close();
+                telaInicial(); // recarrega
+        });
+
+        voltar.setOnAction(e -> editStage.close());
+
+        layout.getChildren().addAll(
+                new Label("Nome do produto:"), tfNome,
+                new Label("Preço original:"), tfPrecoInicial,
+                new Label("Preço promocional:"), tfPrecoPromo,
+                new Label("Quantidade:"), tfQuantidade,
+                new Label("Tipo da promoção:"), tfTipo,
+                salvar, voltar
+        );
+
+        editStage.setScene(new Scene(layout, 300, 415));
+        editStage.show();
     }
 }

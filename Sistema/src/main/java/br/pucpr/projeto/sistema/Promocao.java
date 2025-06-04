@@ -59,6 +59,14 @@ public class Promocao implements Serializable {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
+    public int getIdLoja() {
+        return idLoja;
+    }
+
+    public void setIdLoja(int idLoja) {
+        this.idLoja = idLoja;
+    }
 }
 
 
