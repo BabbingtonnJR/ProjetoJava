@@ -58,6 +58,7 @@ public class TelaLogin {
             //verificação do adm
             if (loginDigitado.equals("admin") && senhaDigitada.equals("1234")) {
                 new TelaAdministrador().telaInicial();
+                stage.close(); // fecha a tela de login
             } else {
                 // pega os dados da persistencia de objetos
                 PersistenciaUtils.carregarClientesDat();
