@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 
 public class TelaLogin {
 
@@ -57,9 +59,32 @@ public class TelaLogin {
             if (loginDigitado.equals("admin") && senhaDigitada.equals("1234")) {
                 new TelaAdministrador().telaInicial();
             } else {
-                //adicionar verificação dos outros (usuarios lojas e clientes)
+                // pega os dados da persistencia de objetos
+                PersistenciaUtils.carregarClientesDat();
+                PersistenciaUtils.carregarLojasDat();
+
+                // verificacao de cliente
+                for (Cliente cliente : RepositorioUsuarios.clientes) {
+                    if (cliente.getLogin().equals(loginDigitado) && cliente.getSenha().equals(senhaDigitada)) {
+                        new TelaCliente(cliente).telaInicial(); // vai pra tela inicial do cliente
+                        stage.close(); // fecha a tela de login
+                        return;
+                    }
+                }
+
+                // verificacao de loja
+                for (Loja loja : RepositorioUsuarios.lojas) {
+                    if (loja.getLogin().equals(loginDigitado) && loja.getSenha().equals(senhaDigitada)) {
+                        new TelaLoja(loja).telaInicial(); // vai pra tela inicial da loja
+                        stage.close(); // fecha a tela de login
+                        return;
+                    }
+                }
+
+                // caso chegue ate aqui é porque não entrou
                 System.out.println("Login ou senha inválidos");
             }
+
         });
 
 
