@@ -14,22 +14,18 @@ public class TelaAdministrador {
         Stage stage = new Stage();
         stage.setTitle("Tela Administrador");
 
-        Label label = new Label("Tela do Administrador");
-        label.setFont(new Font("Arial", 20));
-        label.setAlignment(Pos.CENTER);
-
         Button addLoja = new Button("Adicionar Loja");
 
         addLoja.setOnAction(e -> {
-            stage.close();
             TelaAdicionarLoja();
+            telaInicial();
         });
 
         Button addCliente = new Button("Adicionar Cliente");
 
         addCliente.setOnAction(e -> {
-            stage.close();
             TelaAdicionarCliente();
+            telaInicial();
         });
 
         Button atualizar = new Button("Atualizar");
@@ -39,19 +35,11 @@ public class TelaAdministrador {
             telaInicial();
         });
 
-        Button sair = new Button("Sair");
-        sair.setOnAction(e -> {
-            stage.close();
-            new TelaLogin().telaInicial(); // Volta para a tela de login
-        });
-
-
-        VBox layout = new VBox(15, label, addLoja, addCliente, atualizar, sair);
+        VBox layout = new VBox(15, addLoja, addCliente, atualizar);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new javafx.geometry.Insets(20));
 
         Label titulo = new Label("Usuários Cadastrados");
-        titulo.setFont(new Font("Arial", 24));
         layout.getChildren().add(titulo);
 
         // Clientes
@@ -62,16 +50,13 @@ public class TelaAdministrador {
             Label lbl = new Label("Cliente: " + cliente.getNome() + " " + cliente.getSobrenome() + " | Login: " + cliente.getLogin());
 
             Button editar = new Button("Editar");
-            editar.setOnAction(e -> {
-                stage.close();
-                TelaEdicao(cliente);
-            });
+            editar.setOnAction(e -> TelaEdicao(cliente));
 
             Button excluir = new Button("Excluir");
             excluir.setOnAction(e -> {
                 RepositorioUsuarios.clientes.remove(cliente);
                 PersistenciaUtils.salvarClientesDat();
-                //atualiza o dat apos remover
+                // atualiza o dat apos remover
                 stage.close();
                 telaInicial(); // recarrega a tela
             });
@@ -89,10 +74,7 @@ public class TelaAdministrador {
             Label lbl = new Label("Loja: " + loja.getLoja() + " | Responsável: " + loja.getNome() + " " + loja.getSobrenome() + " | Login: " + loja.getLogin());
 
             Button editar = new Button("Editar");
-            editar.setOnAction(e -> {
-                stage.close();
-                TelaEdicao(loja);
-            });
+            editar.setOnAction(e -> TelaEdicao(loja));
 
             Button excluir = new Button("Excluir");
             excluir.setOnAction(e -> {
@@ -113,58 +95,33 @@ public class TelaAdministrador {
     }
 
 
-    private Label criarLabel(String texto) {
-        Label label = new Label(texto);
-        label.setFont(new Font("Arial", 12));
-        label.setAlignment(Pos.CENTER);
-        return label;
-    }
-
-
-    private TextField criarTextFieldPadrao() {
-        TextField campo = new TextField();
-        campo.setPrefWidth(250);
-        campo.setPrefHeight(30);
-        campo.setMaxWidth(250);
-        campo.setAlignment(Pos.CENTER);
-        return campo;
-    }
-
-    private PasswordField criarPasswordFieldPadrao() {
-        PasswordField campo = new PasswordField();
-        campo.setPrefWidth(250);
-        campo.setPrefHeight(30);
-        campo.setMaxWidth(250);
-        campo.setAlignment(Pos.CENTER);
-        return campo;
-    }
-
     private void TelaEdicao(Object usuario) {
+        //tela para edição
         Stage editarStage = new Stage();
         editarStage.setTitle("Editar Usuário");
 
+
         Button voltar = new Button("Voltar");
-        voltar.setOnAction(e -> {
+
+        voltar.setOnAction(e ->{
             editarStage.close();
-            telaInicial();
         });
 
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER);
 
         if (usuario instanceof Cliente cliente) {
-            // Criação dos campos usando métodos auxiliares
-            TextField nome = criarTextFieldPadrao();
-            TextField sobrenome = criarTextFieldPadrao();
-            TextField login = criarTextFieldPadrao();
-            TextField email = criarTextFieldPadrao();
-            PasswordField senha = criarPasswordFieldPadrao();
-            TextField telefone = criarTextFieldPadrao();
-            TextField endereco = criarTextFieldPadrao();
-            TextField numero = criarTextFieldPadrao();
-            TextField cpf = criarTextFieldPadrao();
 
-            // Preenchendo com os dados atuais
+            TextField nome = new TextField();
+            TextField sobrenome = new TextField();
+            TextField login = new TextField();
+            TextField email = new TextField();
+            PasswordField senha = new PasswordField();
+            TextField telefone = new TextField();
+            TextField endereco = new TextField();
+            TextField numero = new TextField();
+            TextField cpf = new TextField();
+
             nome.setText(cliente.getNome());
             sobrenome.setText(cliente.getSobrenome());
             login.setText(cliente.getLogin());
@@ -175,7 +132,6 @@ public class TelaAdministrador {
             numero.setText(cliente.getNumero());
             cpf.setText(cliente.getCpf());
 
-            // Botão salvar
             Button salvar = new Button("Salvar");
             salvar.setOnAction(e -> {
                 cliente.setNome(nome.getText());
@@ -189,11 +145,11 @@ public class TelaAdministrador {
                 cliente.setCpf(cpf.getText());
 
                 PersistenciaUtils.salvarClientesDat();
+                //atualiza arquivo dat
                 editarStage.close();
                 telaInicial();
             });
 
-            // Adiciona ao layout
             layout.getChildren().addAll(
                     new Label("Nome:"), nome,
                     new Label("Sobrenome:"), sobrenome,
@@ -210,19 +166,18 @@ public class TelaAdministrador {
         }
 
         if (usuario instanceof Loja loja) {
-            // Criação dos campos usando métodos auxiliares
-            TextField nomeLoja = criarTextFieldPadrao();
-            TextField nome = criarTextFieldPadrao();
-            TextField sobrenome = criarTextFieldPadrao();
-            TextField login = criarTextFieldPadrao();
-            TextField email = criarTextFieldPadrao();
-            PasswordField senha = criarPasswordFieldPadrao();
-            TextField telefone = criarTextFieldPadrao();
-            TextField endereco = criarTextFieldPadrao();
-            TextField numero = criarTextFieldPadrao();
-            TextField cnpj = criarTextFieldPadrao();
 
-            // Preenchendo com os dados atuais
+            TextField nomeLoja = new TextField();
+            TextField nome = new TextField();
+            TextField sobrenome = new TextField();
+            TextField login = new TextField();
+            TextField email = new TextField();
+            PasswordField senha = new PasswordField();
+            TextField telefone = new TextField();
+            TextField endereco = new TextField();
+            TextField numero = new TextField();
+            TextField cnpj = new TextField();
+
             nomeLoja.setText(loja.getLoja());
             nome.setText(loja.getNome());
             sobrenome.setText(loja.getSobrenome());
@@ -234,7 +189,6 @@ public class TelaAdministrador {
             numero.setText(loja.getNumero());
             cnpj.setText(loja.getCnpj());
 
-            // Botão salvar
             Button salvar = new Button("Salvar");
             salvar.setOnAction(e -> {
                 loja.setLoja(nomeLoja.getText());
@@ -249,13 +203,13 @@ public class TelaAdministrador {
                 loja.setCnpj(cnpj.getText());
 
                 PersistenciaUtils.salvarLojasDat();
+                //atualiza arquivo dat
                 editarStage.close();
                 telaInicial();
             });
 
-            // Adiciona ao layout
             layout.getChildren().addAll(
-                    new Label("Nome da Loja:"), nomeLoja,
+                    new Label("Loja:"), nomeLoja,
                     new Label("Nome:"), nome,
                     new Label("Sobrenome:"), sobrenome,
                     new Label("Login:"), login,
@@ -270,12 +224,11 @@ public class TelaAdministrador {
             );
         }
 
-        Scene scene = new Scene(layout, 500, 800);
+
+        Scene scene = new Scene(layout, 1000, 1000);
         editarStage.setScene(scene);
         editarStage.show();
     }
-
-
 
 
 
@@ -287,19 +240,99 @@ public class TelaAdministrador {
         cadCliente.setFont(new Font("Arial", 24));
         cadCliente.setAlignment(Pos.CENTER);
 
-        TextField loja = criarTextFieldPadrao();
-        TextField nome = criarTextFieldPadrao();
-        TextField sobrenome = criarTextFieldPadrao();
-        TextField email = criarTextFieldPadrao();
-        TextField telefone = criarTextFieldPadrao();
-        TextField endereco = criarTextFieldPadrao();
-        TextField numero = criarTextFieldPadrao();
-        TextField cnpj = criarTextFieldPadrao();
-        TextField login = criarTextFieldPadrao();
-        PasswordField senha = criarPasswordFieldPadrao();
-        PasswordField repSenha = criarPasswordFieldPadrao();
+        Label lojaLBL = new Label("Digite o Nome da Loja");
+        lojaLBL.setFont(new Font("Arial", 12));
+        lojaLBL.setAlignment(Pos.CENTER);
+        Label nomeLBL = new Label("Digite seu Nome");
+        nomeLBL.setFont(new Font("Arial", 12));
+        nomeLBL.setAlignment(Pos.CENTER);
+        Label sobrenomeLBL = new Label("Digite seu Sobrenome");
+        sobrenomeLBL.setFont(new Font("Arial", 12));
+        sobrenomeLBL.setAlignment(Pos.CENTER);
+        Label emailLBL = new Label("Digite seu Email");
+        emailLBL.setFont(new Font("Arial", 12));
+        emailLBL.setAlignment(Pos.CENTER);
+        Label telefoneLBL = new Label("Digite seu Número de Telefone");
+        telefoneLBL.setFont(new Font("Arial", 12));
+        telefoneLBL.setAlignment(Pos.CENTER);
+        Label enderecoLBL = new Label("Digite o Endereco da Loja");
+        enderecoLBL.setFont(new Font("Arial", 12));
+        enderecoLBL.setAlignment(Pos.CENTER);
+        Label numeroLBL = new Label("Digite o Número do Endereço");
+        numeroLBL.setFont(new Font("Arial", 12));
+        numeroLBL.setAlignment(Pos.CENTER);
+        Label cnpjLBL = new Label("Digite o CNPJ da Loja");
+        cnpjLBL.setFont(new Font("Arial", 12));
+        cnpjLBL.setAlignment(Pos.CENTER);
+        Label loginLBL = new Label("Digite seu Login de Usuário");
+        loginLBL.setFont(new Font("Arial", 12));
+        loginLBL.setAlignment(Pos.CENTER);
+        Label senhaLBL = new Label("Digite sua Senha");
+        senhaLBL.setFont(new Font("Arial", 12));
+        senhaLBL.setAlignment(Pos.CENTER);
+        Label repSenhaLBL = new Label("Confirme sua Senha");
+        repSenhaLBL.setFont(new Font("Arial", 12));
+        repSenhaLBL.setAlignment(Pos.CENTER);
+
+        TextField loja = new TextField();
+        loja.setPrefWidth(250);
+        loja.setPrefHeight(30);
+        loja.setMaxWidth(250);
+        loja.setAlignment(Pos.CENTER);
+        TextField nome = new TextField();
+        nome.setPrefWidth(250);
+        nome.setPrefHeight(30);
+        nome.setMaxWidth(250);
+        nome.setAlignment(Pos.CENTER);
+        TextField sobrenome = new TextField();
+        sobrenome.setPrefWidth(250);
+        sobrenome.setPrefHeight(30);
+        sobrenome.setMaxWidth(250);
+        sobrenome.setAlignment(Pos.CENTER);
+        TextField email = new TextField();
+        email.setPrefWidth(250);
+        email.setPrefHeight(30);
+        email.setMaxWidth(250);
+        email.setAlignment(Pos.CENTER);
+        TextField telefone = new TextField();
+        telefone.setPrefWidth(250);
+        telefone.setPrefHeight(30);
+        telefone.setMaxWidth(250);
+        telefone.setAlignment(Pos.CENTER);
+        TextField endereco = new TextField();
+        endereco.setPrefWidth(250);
+        endereco.setPrefHeight(30);
+        endereco.setMaxWidth(250);
+        endereco.setAlignment(Pos.CENTER);
+        TextField numero = new TextField();
+        numero.setPrefWidth(250);
+        numero.setPrefHeight(30);
+        numero.setMaxWidth(250);
+        numero.setAlignment(Pos.CENTER);
+        TextField cnpj = new TextField();
+        cnpj.setPrefWidth(250);
+        cnpj.setPrefHeight(30);
+        cnpj.setMaxWidth(250);
+        cnpj.setAlignment(Pos.CENTER);
+        TextField login = new TextField();
+        login.setPrefWidth(250);
+        login.setPrefHeight(30);
+        login.setMaxWidth(250);
+        login.setAlignment(Pos.CENTER);
+        PasswordField senha = new PasswordField();
+        senha.setPrefWidth(250);
+        senha.setPrefHeight(30);
+        senha.setMaxWidth(250);
+        senha.setAlignment(Pos.CENTER);
+        PasswordField repSenha = new PasswordField();
+        repSenha.setPrefWidth(250);
+        repSenha.setPrefHeight(30);
+        repSenha.setMaxWidth(250);
+        repSenha.setAlignment(Pos.CENTER);
+
 
         Button cadastrar = new Button("Cadastrar");
+
         cadastrar.setOnAction(e -> {
             if (!senha.getText().equals(repSenha.getText())) {
                 System.out.println("As senhas não coincidem!");
@@ -321,63 +354,125 @@ public class TelaAdministrador {
             );
 
             RepositorioUsuarios.lojas.add(novaLoja);
+
+            //salva no dat
             PersistenciaUtils.salvarLojasDat();
+
 
             System.out.println("Loja cadastrada com sucesso!");
             addStage.close();
-            telaInicial();
         });
 
         Button voltar = new Button("Voltar");
-        voltar.setOnAction(e -> {
-            telaInicial();
+
+        voltar.setOnAction(e ->{
             addStage.close();
         });
 
-        VBox layout = new VBox(10,
-                cadCliente,
-                criarLabel("Digite o Nome da Loja"), loja,
-                criarLabel("Digite seu Nome"), nome,
-                criarLabel("Digite seu Sobrenome"), sobrenome,
-                criarLabel("Digite seu Email"), email,
-                criarLabel("Digite seu Número de Telefone"), telefone,
-                criarLabel("Digite o Endereço da Loja"), endereco,
-                criarLabel("Digite o Número do Endereço"), numero,
-                criarLabel("Digite o CNPJ da Loja"), cnpj,
-                criarLabel("Digite seu Login de Usuário"), login,
-                criarLabel("Digite sua Senha"), senha,
-                criarLabel("Confirme sua Senha"), repSenha,
-                cadastrar, voltar
-        );
+        VBox layout = new VBox(10, lojaLBL, loja, nomeLBL, nome, sobrenomeLBL, sobrenome, emailLBL, email, telefoneLBL, telefone, enderecoLBL, endereco, numeroLBL, numero, cnpjLBL, cnpj, loginLBL, login, senhaLBL, senha, repSenhaLBL, repSenha, cadastrar, voltar);//caixa com as informações
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 1000, 1000);
+        Scene scene = new Scene(layout, 1000, 1000);//cena visual, com a caixa com as informações
         addStage.setScene(scene);
         addStage.show();
-    }
 
+    }
 
 
     private void TelaAdicionarCliente() {
         Stage addStage = new Stage();
         addStage.setTitle("Cadastro Cliente");
 
+        //labels
         Label clienteLBL = new Label("Cadastro Cliente");
         clienteLBL.setFont(new Font("Arial", 24));
         clienteLBL.setAlignment(Pos.CENTER);
 
-        TextField nome = criarTextFieldPadrao();
-        TextField sobrenome = criarTextFieldPadrao();
-        TextField email = criarTextFieldPadrao();
-        TextField telefone = criarTextFieldPadrao();
-        TextField cpf = criarTextFieldPadrao();
-        TextField endereco = criarTextFieldPadrao();
-        TextField numero = criarTextFieldPadrao();
-        TextField login = criarTextFieldPadrao();
-        PasswordField senha = criarPasswordFieldPadrao();
-        PasswordField repSenha = criarPasswordFieldPadrao();
+        Label nomeLBL = new Label("Digite seu Nome");
+        nomeLBL.setFont(new Font("Arial", 12));
+        nomeLBL.setAlignment(Pos.CENTER);
+        Label sobrenomeLBL = new Label("Digite seu Sobrenome");
+        sobrenomeLBL.setFont(new Font("Arial", 12));
+        sobrenomeLBL.setAlignment(Pos.CENTER);
+        Label emailLBL = new Label("Digite seu Email");
+        emailLBL.setFont(new Font("Arial", 12));
+        emailLBL.setAlignment(Pos.CENTER);
+        Label telefoneLBL = new Label("Digite seu Número de Telefone");
+        telefoneLBL.setFont(new Font("Arial", 12));
+        telefoneLBL.setAlignment(Pos.CENTER);
+        Label cpfLBL = new Label("Digite o Número do seu CPF");
+        cpfLBL.setFont(new Font("Arial", 12));
+        cpfLBL.setAlignment(Pos.CENTER);
+        Label enderecoLBL = new Label("Digite seu Endereco");
+        enderecoLBL.setFont(new Font("Arial", 12));
+        enderecoLBL.setAlignment(Pos.CENTER);
+        Label numeroLBL = new Label("Digite seu Número Residencial");
+        numeroLBL.setFont(new Font("Arial", 12));
+        numeroLBL.setAlignment(Pos.CENTER);
+        Label loginLBL = new Label("Digite seu Login de Usuário");
+        loginLBL.setFont(new Font("Arial", 12));
+        loginLBL.setAlignment(Pos.CENTER);
+        Label senhaLBL = new Label("Digite sua Senha");
+        senhaLBL.setFont(new Font("Arial", 12));
+        senhaLBL.setAlignment(Pos.CENTER);
+        Label repSenhaLBL = new Label("Confirme sua Senha");
+        repSenhaLBL.setFont(new Font("Arial", 12));
+        repSenhaLBL.setAlignment(Pos.CENTER);
+
+        //textFields
+        TextField nome = new TextField();
+        nome.setPrefWidth(250);
+        nome.setPrefHeight(30);
+        nome.setMaxWidth(250);
+        nome.setAlignment(Pos.CENTER);
+        TextField sobrenome = new TextField();
+        sobrenome.setPrefWidth(250);
+        sobrenome.setPrefHeight(30);
+        sobrenome.setMaxWidth(250);
+        sobrenome.setAlignment(Pos.CENTER);
+        TextField email = new TextField();
+        email.setPrefWidth(250);
+        email.setPrefHeight(30);
+        email.setMaxWidth(250);
+        email.setAlignment(Pos.CENTER);
+        TextField telefone = new TextField();
+        telefone.setPrefWidth(250);
+        telefone.setPrefHeight(30);
+        telefone.setMaxWidth(250);
+        telefone.setAlignment(Pos.CENTER);
+        TextField cpf = new TextField();
+        cpf.setPrefWidth(250);
+        cpf.setPrefHeight(30);
+        cpf.setMaxWidth(250);
+        cpf.setAlignment(Pos.CENTER);
+        TextField endereco = new TextField();
+        endereco.setPrefWidth(250);
+        endereco.setPrefHeight(30);
+        endereco.setMaxWidth(250);
+        endereco.setAlignment(Pos.CENTER);
+        TextField numero = new TextField();
+        numero.setPrefWidth(250);
+        numero.setPrefHeight(30);
+        numero.setMaxWidth(250);
+        numero.setAlignment(Pos.CENTER);
+        TextField login = new TextField();
+        login.setPrefWidth(250);
+        login.setPrefHeight(30);
+        login.setMaxWidth(250);
+        login.setAlignment(Pos.CENTER);
+        PasswordField senha = new PasswordField();
+        senha.setPrefWidth(250);
+        senha.setPrefHeight(30);
+        senha.setMaxWidth(250);
+        senha.setAlignment(Pos.CENTER);
+        PasswordField repSenha = new PasswordField();
+        repSenha.setPrefWidth(250);
+        repSenha.setPrefHeight(30);
+        repSenha.setMaxWidth(250);
+        repSenha.setAlignment(Pos.CENTER);
 
         Button cadastrar = new Button("Cadastrar");
+
         cadastrar.setOnAction(e -> {
             if (!senha.getText().equals(repSenha.getText())) {
                 System.out.println("As senhas não coincidem!");
@@ -398,36 +493,26 @@ public class TelaAdministrador {
             );
 
             RepositorioUsuarios.clientes.add(novoCliente);
+
+            //salva no dat
             PersistenciaUtils.salvarClientesDat();
 
             System.out.println("Cadastro feito com sucesso!");
             addStage.close();
-            telaInicial();
         });
 
+
         Button voltar = new Button("Voltar");
-        voltar.setOnAction(e -> {
-            telaInicial();
+
+        voltar.setOnAction(e ->{
             addStage.close();
         });
 
-        VBox layout = new VBox(10,
-                clienteLBL,
-                criarLabel("Digite seu Nome"), nome,
-                criarLabel("Digite seu Sobrenome"), sobrenome,
-                criarLabel("Digite seu Email"), email,
-                criarLabel("Digite seu Número de Telefone"), telefone,
-                criarLabel("Digite o Número do seu CPF"), cpf,
-                criarLabel("Digite seu Endereço"), endereco,
-                criarLabel("Digite seu Número Residencial"), numero,
-                criarLabel("Digite seu Login de Usuário"), login,
-                criarLabel("Digite sua Senha"), senha,
-                criarLabel("Confirme sua Senha"), repSenha,
-                cadastrar, voltar
-        );
+        //layout
+        VBox layout = new VBox(10, clienteLBL, nomeLBL, nome, sobrenomeLBL, sobrenome, emailLBL, email, telefoneLBL, telefone, cpfLBL, cpf, enderecoLBL, endereco, numeroLBL, numero, loginLBL, login, senhaLBL, senha, repSenhaLBL, repSenha, cadastrar, voltar);//caixa com as informações
         layout.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(layout, 1000, 1000);
+        Scene scene = new Scene(layout, 1000, 1000);//cena visual, com a caixa com as informações
         addStage.setScene(scene);
         addStage.show();
     }
