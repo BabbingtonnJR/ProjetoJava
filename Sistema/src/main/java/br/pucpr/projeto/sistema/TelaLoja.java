@@ -50,7 +50,7 @@ public class TelaLoja {
                 );
 
                 Button btnEditar = new Button("Editar");
-                btnEditar.setOnAction(e -> editarPromocao(promo)); // criar função se quiser
+                btnEditar.setOnAction(e -> editarPromocao(promo, stage)); // criar função se quiser
 
                 Button btnExcluir = new Button("Excluir");
                 btnExcluir.setOnAction(e -> {
@@ -138,7 +138,7 @@ public class TelaLoja {
         }
     }
 
-    private void editarPromocao(Promocao promo) {
+    private void editarPromocao(Promocao promo, Stage stagePrincipal) {
         Stage editStage = new Stage();
         editStage.setTitle("Editar Promoção");
 
@@ -164,6 +164,7 @@ public class TelaLoja {
 
                 PersistenciaUtils.salvarPromocoesDat();
                 editStage.close();
+                stagePrincipal.close();
                 telaInicial(); // recarrega
         });
 
