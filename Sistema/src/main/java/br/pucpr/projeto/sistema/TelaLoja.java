@@ -29,7 +29,13 @@ public class TelaLoja {
         Button btnCriarPromocao = new Button("Criar Promoção");
         btnCriarPromocao.setOnAction(e -> abrirFormularioPromocao(stage));
 
-        VBox layout = new VBox(20, label, btnCriarPromocao);
+        Button sair = new Button("Sair");
+        sair.setOnAction(e -> {
+            stage.close();
+            new TelaLogin().telaInicial(); // Volta para a tela de login
+        });
+
+        VBox layout = new VBox(20, label, btnCriarPromocao, sair);
         layout.setAlignment(Pos.TOP_CENTER);
         layout.setPadding(new Insets(20));
 
