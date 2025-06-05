@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 public class Promocao implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static int proximoId = 1;
+
+    private int id;
     private String nomeProduto;
     private int idLoja;
     private double precoInicial;
@@ -12,12 +15,19 @@ public class Promocao implements Serializable {
     private String tipo;
 
     public Promocao(String nomeProduto, int idLoja, double precoInicial, double precoPromocional, int quantidade, String tipo) {
+        this.id = proximoId++;
         this.nomeProduto = nomeProduto;
         this.idLoja = idLoja;
         this.precoInicial = precoInicial;
         this.precoPromocional = precoPromocional;
         this.quantidade = quantidade;
         this.tipo = tipo;
+    }
+
+    // Getters e Setters
+
+    public int getId() {
+        return id;
     }
 
     public String getNomeProduto() {
@@ -68,7 +78,3 @@ public class Promocao implements Serializable {
         this.idLoja = idLoja;
     }
 }
-
-
-
-
