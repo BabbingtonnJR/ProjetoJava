@@ -7,4 +7,5 @@ public class RepositorioUsuarios {
     public static ArrayList<Loja> lojas = new ArrayList<>();
     public static ArrayList<Cliente> clientes = new ArrayList<>();
     public static ArrayList<Promocao> promocoes = new ArrayList<>();
+    public static ArrayList<Denuncia> denuncias = new ArrayList<>();
 }

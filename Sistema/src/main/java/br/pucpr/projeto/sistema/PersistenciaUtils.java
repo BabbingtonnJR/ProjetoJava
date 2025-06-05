@@ -66,4 +66,26 @@ public class PersistenciaUtils {
             }
         }
     }
+
+    // denuncias
+    public static void salvarDenunciasDat() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("denuncias.dat"))) {
+            out.writeObject(RepositorioUsuarios.denuncias);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void carregarDenunciasDat() {
+        File arquivo = new File("denuncias.dat");
+        if (arquivo.exists()) {
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(arquivo))) {
+                RepositorioUsuarios.denuncias = (ArrayList<Denuncia>) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

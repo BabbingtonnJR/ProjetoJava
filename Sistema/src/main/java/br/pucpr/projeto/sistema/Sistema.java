@@ -36,6 +36,7 @@ public class Sistema extends Application {
         PersistenciaUtils.carregarClientesDat();
         PersistenciaUtils.carregarLojasDat();
         PersistenciaUtils.carregarPromocoesDat();
+        PersistenciaUtils.carregarDenunciasDat();
 
         launch();
     }
