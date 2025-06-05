@@ -1,4 +1,4 @@
-package br.pucpr.projeto.sistema; // ou outro nome
+package br.pucpr.projeto.sistema;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -6,6 +6,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class TelaAdministrador {
@@ -32,6 +36,20 @@ public class TelaAdministrador {
             TelaAdicionarCliente();
         });
 
+        Button verPromocoes = new Button("Ver Promoções");
+        verPromocoes.setOnAction(e -> {
+            stage.close();
+            telaPromocoes();
+        });
+
+        Button verDenuncias = new Button("Ver Denúncias");
+        verDenuncias.setOnAction(e -> {
+            stage.close();
+            telaDenuncias();
+        });
+
+
+
         Button atualizar = new Button("Atualizar");
 
         atualizar.setOnAction(e -> {
@@ -42,11 +60,11 @@ public class TelaAdministrador {
         Button sair = new Button("Sair");
         sair.setOnAction(e -> {
             stage.close();
-            new TelaLogin().telaInicial(); // Volta para a tela de login
+            new TelaLogin().telaInicial(); //volta para a tela de login
         });
 
 
-        VBox layout = new VBox(15, label, addLoja, addCliente, atualizar, sair);
+        VBox layout = new VBox(15, label, addLoja, addCliente, verPromocoes, verDenuncias, atualizar, sair);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new javafx.geometry.Insets(20));
 
@@ -54,7 +72,7 @@ public class TelaAdministrador {
         titulo.setFont(new Font("Arial", 24));
         layout.getChildren().add(titulo);
 
-        // Clientes
+        //clientes
         for (Cliente cliente : RepositorioUsuarios.clientes) {
             HBox linha = new HBox(10);
             linha.setAlignment(Pos.CENTER_LEFT);
@@ -68,12 +86,18 @@ public class TelaAdministrador {
             });
 
             Button excluir = new Button("Excluir");
+
             excluir.setOnAction(e -> {
-                RepositorioUsuarios.clientes.remove(cliente);
-                PersistenciaUtils.salvarClientesDat();
-                //atualiza o dat apos remover
-                stage.close();
-                telaInicial(); // recarrega a tela
+                boolean confirmacao = confirmarExclusaoCliente(cliente.getNome() + " " + cliente.getSobrenome());
+                if (confirmacao) {
+                    RepositorioUsuarios.clientes.remove(cliente);
+                    PersistenciaUtils.salvarClientesDat();
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Usuario Excluído!");
+
+                    //atualiza o dat apos remover
+                    stage.close();
+                    telaInicial(); // recarrega a tela
+                }
             });
 
 
@@ -81,7 +105,7 @@ public class TelaAdministrador {
             layout.getChildren().add(linha);
         }
 
-        // Lojas
+        //lojas
         for (Loja loja : RepositorioUsuarios.lojas) {
             HBox linha = new HBox(10);
             linha.setAlignment(Pos.CENTER_LEFT);
@@ -96,10 +120,14 @@ public class TelaAdministrador {
 
             Button excluir = new Button("Excluir");
             excluir.setOnAction(e -> {
-                RepositorioUsuarios.lojas.remove(loja);
-                PersistenciaUtils.salvarLojasDat();
-                stage.close();
-                telaInicial();
+                boolean confirmacao = confirmarExclusaoLoja(loja.getLoja());
+                if (confirmacao) {
+                    RepositorioUsuarios.lojas.remove(loja);
+                    PersistenciaUtils.salvarLojasDat();
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Loja Excluída!");
+                    stage.close();
+                    telaInicial();
+                }
             });
 
 
@@ -111,6 +139,67 @@ public class TelaAdministrador {
         stage.setScene(scene);
         stage.show();
     }
+
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();
+    }
+
+
+    private boolean confirmarExclusaoPromocao(String nomeProduto) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação");
+        alert.setHeaderText("Deseja realmente excluir esta promoção?");
+        alert.setContentText("Produto: " + nomeProduto);
+
+        Optional<ButtonType> resultado = alert.showAndWait();
+        return resultado.isPresent() && resultado.get() == ButtonType.OK;
+    }
+
+    private boolean confirmarExclusaoCliente(String nomeCliente) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação");
+        alert.setHeaderText("Deseja realmente excluir esta promoção?");
+        alert.setContentText("Produto: " + nomeCliente);
+
+        Optional<ButtonType> resultado = alert.showAndWait();
+        return resultado.isPresent() && resultado.get() == ButtonType.OK;
+    }
+
+    private boolean confirmarExclusaoLoja(String nomeLoja) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação");
+        alert.setHeaderText("Deseja realmente excluir esta loja?");
+        alert.setContentText("Loja: " + nomeLoja);
+
+        Optional<ButtonType> resultado = alert.showAndWait();
+        return resultado.isPresent() && resultado.get() == ButtonType.OK;
+    }
+
+    private String buscarLoginPorIdCliente(int idCliente) {
+        for (Cliente cliente : RepositorioUsuarios.clientes) {
+            if (cliente.getId() == idCliente) {
+                return cliente.getLogin();
+            }
+        }
+        return "Cliente não encontrado";
+    }
+
+
+    private boolean confirmarExclusaoDenuncia(String descricao) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmação");
+        alert.setHeaderText("Deseja realmente excluir esta denúncia?");
+        alert.setContentText("Descrição: " + descricao);
+
+        Optional<ButtonType> resultado = alert.showAndWait();
+        return resultado.isPresent() && resultado.get() == ButtonType.OK;
+    }
+
 
 
     private Label criarLabel(String texto) {
@@ -153,7 +242,7 @@ public class TelaAdministrador {
         layout.setAlignment(Pos.CENTER);
 
         if (usuario instanceof Cliente cliente) {
-            // Criação dos campos usando métodos auxiliares
+            //textfields com dados atuais
             TextField nome = criarTextFieldPadrao();
             TextField sobrenome = criarTextFieldPadrao();
             TextField login = criarTextFieldPadrao();
@@ -164,7 +253,7 @@ public class TelaAdministrador {
             TextField numero = criarTextFieldPadrao();
             TextField cpf = criarTextFieldPadrao();
 
-            // Preenchendo com os dados atuais
+            //dados atuais
             nome.setText(cliente.getNome());
             sobrenome.setText(cliente.getSobrenome());
             login.setText(cliente.getLogin());
@@ -175,7 +264,7 @@ public class TelaAdministrador {
             numero.setText(cliente.getNumero());
             cpf.setText(cliente.getCpf());
 
-            // Botão salvar
+            //salvar
             Button salvar = new Button("Salvar");
             salvar.setOnAction(e -> {
                 cliente.setNome(nome.getText());
@@ -188,12 +277,14 @@ public class TelaAdministrador {
                 cliente.setNumero(numero.getText());
                 cliente.setCpf(cpf.getText());
 
+
                 PersistenciaUtils.salvarClientesDat();
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Dados atualizados com sucesso!");
                 editarStage.close();
                 telaInicial();
             });
 
-            // Adiciona ao layout
+            //layout
             layout.getChildren().addAll(
                     new Label("Nome:"), nome,
                     new Label("Sobrenome:"), sobrenome,
@@ -210,7 +301,7 @@ public class TelaAdministrador {
         }
 
         if (usuario instanceof Loja loja) {
-            // Criação dos campos usando métodos auxiliares
+            //text fields usando metodo
             TextField nomeLoja = criarTextFieldPadrao();
             TextField nome = criarTextFieldPadrao();
             TextField sobrenome = criarTextFieldPadrao();
@@ -222,7 +313,7 @@ public class TelaAdministrador {
             TextField numero = criarTextFieldPadrao();
             TextField cnpj = criarTextFieldPadrao();
 
-            // Preenchendo com os dados atuais
+            //coloca os dados atuais
             nomeLoja.setText(loja.getLoja());
             nome.setText(loja.getNome());
             sobrenome.setText(loja.getSobrenome());
@@ -234,7 +325,7 @@ public class TelaAdministrador {
             numero.setText(loja.getNumero());
             cnpj.setText(loja.getCnpj());
 
-            // Botão salvar
+            //salvar
             Button salvar = new Button("Salvar");
             salvar.setOnAction(e -> {
                 loja.setLoja(nomeLoja.getText());
@@ -249,11 +340,12 @@ public class TelaAdministrador {
                 loja.setCnpj(cnpj.getText());
 
                 PersistenciaUtils.salvarLojasDat();
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Dados atualizados com sucesso!");
                 editarStage.close();
                 telaInicial();
             });
 
-            // Adiciona ao layout
+            // layout
             layout.getChildren().addAll(
                     new Label("Nome da Loja:"), nomeLoja,
                     new Label("Nome:"), nome,
@@ -274,10 +366,6 @@ public class TelaAdministrador {
         editarStage.setScene(scene);
         editarStage.show();
     }
-
-
-
-
 
     private void TelaAdicionarLoja() {
         Stage addStage = new Stage();
@@ -302,8 +390,8 @@ public class TelaAdministrador {
         Button cadastrar = new Button("Cadastrar");
         cadastrar.setOnAction(e -> {
             if (!senha.getText().equals(repSenha.getText())) {
-                System.out.println("As senhas não coincidem!");
-                return;
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "As senhas não coincidem!");
+
             }
 
             Loja novaLoja = new Loja(
@@ -323,7 +411,8 @@ public class TelaAdministrador {
             RepositorioUsuarios.lojas.add(novaLoja);
             PersistenciaUtils.salvarLojasDat();
 
-            System.out.println("Loja cadastrada com sucesso!");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Loja Cadastrada!");
+
             addStage.close();
             telaInicial();
         });
@@ -380,8 +469,8 @@ public class TelaAdministrador {
         Button cadastrar = new Button("Cadastrar");
         cadastrar.setOnAction(e -> {
             if (!senha.getText().equals(repSenha.getText())) {
-                System.out.println("As senhas não coincidem!");
-                return;
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "As senhas não coincidem!");
+
             }
 
             Cliente novoCliente = new Cliente(
@@ -400,7 +489,9 @@ public class TelaAdministrador {
             RepositorioUsuarios.clientes.add(novoCliente);
             PersistenciaUtils.salvarClientesDat();
 
-            System.out.println("Cadastro feito com sucesso!");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Cliente Cadastrado!");
+
+
             addStage.close();
             telaInicial();
         });
@@ -431,4 +522,151 @@ public class TelaAdministrador {
         addStage.setScene(scene);
         addStage.show();
     }
+
+    private void telaPromocoes() {
+        Stage stage = new Stage();
+        stage.setTitle("Promoções Cadastradas");
+
+        VBox layout = new VBox(15);
+        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setPadding(new javafx.geometry.Insets(20));
+
+        Label titulo = new Label("Promoções Cadastradas por Loja");
+        titulo.setFont(new Font("Arial", 24));
+        layout.getChildren().add(titulo);
+
+        boolean temPromocoes = false;
+
+        for (Loja loja : RepositorioUsuarios.lojas) {
+            // promoções da loja
+            List<Promocao> promocoesLoja = RepositorioUsuarios.promocoes.stream()
+                    .filter(p -> p.getIdLoja() == loja.getId())
+                    .collect(Collectors.toList());
+
+            if (!promocoesLoja.isEmpty()) {
+                temPromocoes = true;
+
+                Label lojaLabel = new Label("Loja: " + loja.getLoja() + " | Responsável: " + loja.getNome() + " " + loja.getSobrenome());
+                lojaLabel.setFont(new Font("Arial", 16));
+                layout.getChildren().add(lojaLabel);
+
+                for (Promocao promocao : promocoesLoja) {
+                    HBox promoBox = new HBox(10);
+                    promoBox.setAlignment(Pos.CENTER_LEFT);
+
+                    String info = String.format(
+                            "Produto: %s | Tipo: %s | Preço Inicial: R$%.2f | Preço Promo: R$%.2f | Quantidade: %d",
+                            promocao.getNomeProduto(),
+                            promocao.getTipo(),
+                            promocao.getPrecoInicial(),
+                            promocao.getPrecoPromocional(),
+                            promocao.getQuantidade()
+                    );
+
+                    Label promoLabel = new Label(info);
+                    promoLabel.setFont(new Font("Arial", 13));
+
+                    Button excluir = new Button("Excluir Promoção");
+                    excluir.setOnAction(e -> {
+                        boolean confirmacao = confirmarExclusaoPromocao(promocao.getNomeProduto());
+                        if (confirmacao) {
+                            RepositorioUsuarios.promocoes.remove(promocao);
+                            PersistenciaUtils.salvarPromocoesDat();
+                            stage.close(); // fecha e reabre para atualizar
+                            telaPromocoes();
+                        }
+                    });
+
+                    promoBox.getChildren().addAll(promoLabel, excluir);
+                    layout.getChildren().add(promoBox);
+                }
+
+                layout.getChildren().add(new Separator());
+            }
+        }
+
+        if (!temPromocoes) {
+            Label vazio = new Label("Nenhuma promoção cadastrada.");
+            vazio.setFont(new Font("Arial", 14));
+            layout.getChildren().add(vazio);
+        }
+
+        Button voltar = new Button("Voltar");
+        voltar.setOnAction(e -> {
+            stage.close();
+            telaInicial();
+        });
+        layout.getChildren().add(voltar);
+
+        ScrollPane scroll = new ScrollPane(layout);
+        scroll.setFitToWidth(true);
+
+        Scene scene = new Scene(scroll, 800, 600);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void telaDenuncias() {
+        Stage stage = new Stage();
+        stage.setTitle("Denúncias de Usuários");
+
+        VBox layout = new VBox(15);
+        layout.setAlignment(Pos.TOP_CENTER);
+        layout.setPadding(new javafx.geometry.Insets(20));
+
+        Label titulo = new Label("Denúncias Recebidas");
+        titulo.setFont(new Font("Arial", 24));
+        layout.getChildren().add(titulo);
+
+        boolean temDenuncias = false;
+
+        for (Denuncia denuncia : RepositorioUsuarios.denuncias) {
+            temDenuncias = true;
+
+            VBox denunciaBox = new VBox(5);
+            denunciaBox.setStyle("-fx-border-color: gray; -fx-padding: 10;");
+            denunciaBox.setAlignment(Pos.CENTER_LEFT);
+
+            Label autor = new Label("Usuário (login): " + buscarLoginPorIdCliente(denuncia.getIdCliente()));
+            Label descricao = new Label("Descrição: " + denuncia.getDescricao());
+            Label data = new Label("Data: " + denuncia.getDataDenuncia()); // se tiver data
+
+            Button excluir = new Button("Excluir");
+            excluir.setOnAction(e -> {
+                boolean confirmacao = confirmarExclusaoDenuncia(denuncia.getDescricao());
+                if (confirmacao) {
+                    RepositorioUsuarios.denuncias.remove(denuncia);
+                    PersistenciaUtils.salvarDenunciasDat();
+                    stage.close();
+                    telaDenuncias();
+                }
+            });
+
+            denunciaBox.getChildren().addAll(autor, descricao, data, excluir);
+            layout.getChildren().add(denunciaBox);
+        }
+
+        if (!temDenuncias) {
+            Label vazio = new Label("Nenhuma denúncia registrada.");
+            vazio.setFont(new Font("Arial", 14));
+            layout.getChildren().add(vazio);
+        }
+
+        Button voltar = new Button("Voltar");
+        voltar.setOnAction(e -> {
+            stage.close();
+            telaInicial();
+        });
+
+        layout.getChildren().add(voltar);
+
+        ScrollPane scroll = new ScrollPane(layout);
+        scroll.setFitToWidth(true);
+
+        Scene scene = new Scene(scroll, 800, 600);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+
 }

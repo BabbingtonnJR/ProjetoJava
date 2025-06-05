@@ -1,13 +1,10 @@
 package br.pucpr.projeto.sistema;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 public class TelaCadastro {
@@ -28,6 +25,40 @@ public class TelaCadastro {
         campo.setMaxWidth(250);
         campo.setAlignment(Pos.CENTER);
         return campo;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensagem) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();
+    }
+
+    private boolean loginExistente(String login) {
+        return RepositorioUsuarios.clientes.stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(login)) ||
+                RepositorioUsuarios.lojas.stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(login)) ||
+                RepositorioUsuarios.administradores.stream().anyMatch(u -> u.getLogin().equalsIgnoreCase(login));
+    }
+
+    private boolean emailExistente(String email) {
+        return RepositorioUsuarios.clientes.stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email)) ||
+                RepositorioUsuarios.lojas.stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email)) ||
+                RepositorioUsuarios.administradores.stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+    }
+
+    private boolean telefoneExistente(String telefone) {
+        return RepositorioUsuarios.clientes.stream().anyMatch(u -> u.getTelefone().equals(telefone)) ||
+                RepositorioUsuarios.lojas.stream().anyMatch(u -> u.getTelefone().equals(telefone)) ||
+                RepositorioUsuarios.administradores.stream().anyMatch(u -> u.getTelefone().equals(telefone));
+    }
+
+    private boolean cpfExistente(String cpf) {
+        return RepositorioUsuarios.clientes.stream().anyMatch(c -> c.getCpf().equals(cpf));
+    }
+
+    private boolean cnpjExistente(String cnpj) {
+        return RepositorioUsuarios.lojas.stream().anyMatch(l -> l.getCnpj().equals(cnpj));
     }
 
     public void selecao() {
@@ -75,29 +106,49 @@ public class TelaCadastro {
 
         Button cadastrar = new Button("Cadastrar");
         cadastrar.setOnAction(e -> {
-            if (!senha.getText().equals(repSenha.getText())) {
-                System.out.println("As senhas não coincidem!");
-                return;
+            try {
+                if (!senha.getText().equals(repSenha.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "As senhas não coincidem!");
+                    return;
+                }
+                if (loginExistente(login.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Login já cadastrado!");
+                    return;
+                }
+                if (emailExistente(email.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Email já cadastrado!");
+                    return;
+                }
+                if (telefoneExistente(telefone.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Telefone já cadastrado!");
+                    return;
+                }
+                if (cpfExistente(cpf.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "CPF já cadastrado!");
+                    return;
+                }
+
+                Cliente novoCliente = new Cliente(
+                        RepositorioUsuarios.clientes.size() + 1,
+                        nome.getText(),
+                        sobrenome.getText(),
+                        email.getText(),
+                        login.getText(),
+                        senha.getText(),
+                        telefone.getText(),
+                        endereco.getText(),
+                        numero.getText(),
+                        cpf.getText()
+                );
+
+                RepositorioUsuarios.clientes.add(novoCliente);
+                PersistenciaUtils.salvarClientesDat();
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Cadastro feito com sucesso!");
+                stage.close();
+            } catch (Exception ex) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro no cadastro: " + ex.getMessage());
             }
-
-            Cliente novoCliente = new Cliente(
-                    RepositorioUsuarios.clientes.size() + 1,
-                    nome.getText(),
-                    sobrenome.getText(),
-                    email.getText(),
-                    login.getText(),
-                    senha.getText(),
-                    telefone.getText(),
-                    endereco.getText(),
-                    numero.getText(),
-                    cpf.getText()
-            );
-
-            RepositorioUsuarios.clientes.add(novoCliente);
-            PersistenciaUtils.salvarClientesDat();
-
-            System.out.println("Cadastro feito com sucesso!");
-            stage.close();
         });
 
         Button voltar = new Button("Voltar");
@@ -128,8 +179,8 @@ public class TelaCadastro {
         Stage stage = new Stage();
         stage.setTitle("Cadastro Loja");
 
-        Label cadCliente = new Label("Cadastro Loja");
-        cadCliente.setFont(new Font("Arial", 24));
+        Label cadLoja = new Label("Cadastro Loja");
+        cadLoja.setFont(new Font("Arial", 24));
 
         TextField loja = criarTextField();
         TextField nome = criarTextField();
@@ -145,37 +196,57 @@ public class TelaCadastro {
 
         Button cadastrar = new Button("Cadastrar");
         cadastrar.setOnAction(e -> {
-            if (!senha.getText().equals(repSenha.getText())) {
-                System.out.println("As senhas não coincidem!");
-                return;
+            try {
+                if (!senha.getText().equals(repSenha.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "As senhas não coincidem!");
+                    return;
+                }
+                if (loginExistente(login.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Login já cadastrado!");
+                    return;
+                }
+                if (emailExistente(email.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Email já cadastrado!");
+                    return;
+                }
+                if (telefoneExistente(telefone.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Telefone já cadastrado!");
+                    return;
+                }
+                if (cnpjExistente(cnpj.getText())) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Erro", "CNPJ já cadastrado!");
+                    return;
+                }
+
+                Loja novaLoja = new Loja(
+                        RepositorioUsuarios.lojas.size() + 1,
+                        nome.getText(),
+                        sobrenome.getText(),
+                        email.getText(),
+                        login.getText(),
+                        senha.getText(),
+                        telefone.getText(),
+                        endereco.getText(),
+                        numero.getText(),
+                        loja.getText(),
+                        cnpj.getText()
+                );
+
+                RepositorioUsuarios.lojas.add(novaLoja);
+                PersistenciaUtils.salvarLojasDat();
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Sucesso", "Loja cadastrada com sucesso!");
+                stage.close();
+            } catch (Exception ex) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Erro", "Erro no cadastro: " + ex.getMessage());
             }
-
-            Loja novaLoja = new Loja(
-                    RepositorioUsuarios.lojas.size() + 1,
-                    nome.getText(),
-                    sobrenome.getText(),
-                    email.getText(),
-                    login.getText(),
-                    senha.getText(),
-                    telefone.getText(),
-                    endereco.getText(),
-                    numero.getText(),
-                    loja.getText(),
-                    cnpj.getText()
-            );
-
-            RepositorioUsuarios.lojas.add(novaLoja);
-            PersistenciaUtils.salvarLojasDat();
-
-            System.out.println("Loja cadastrada com sucesso!");
-            stage.close();
         });
 
         Button voltar = new Button("Voltar");
         voltar.setOnAction(e -> stage.close());
 
         VBox layout = new VBox(10,
-                cadCliente,
+                cadLoja,
                 new Label("Digite o Nome da Loja"), loja,
                 new Label("Digite seu Nome"), nome,
                 new Label("Digite seu Sobrenome"), sobrenome,
