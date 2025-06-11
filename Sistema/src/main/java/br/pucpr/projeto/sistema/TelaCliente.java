@@ -72,7 +72,7 @@ public class TelaCliente {
             btnDenunciar.setOnAction(e -> abrirFormularioDenuncia(stage, promo));
 
             VBox promocaoBox = new VBox(8, dadosPromo, btnDenunciar);
-            promocaoBox.setStyle("-fx-border-color: #ccc; -fx-padding: 10; -fx-border-radius: 5;");
+            promocaoBox.setStyle("-fx-border-color: #ccc; -fx-padding: 10; -fx-border-radius: 6;");
             listaPromocoes.getChildren().add(promocaoBox);
         }
 
