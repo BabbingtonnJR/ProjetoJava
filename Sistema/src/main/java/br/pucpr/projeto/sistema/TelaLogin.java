@@ -49,7 +49,7 @@ public class TelaLogin {
                 return;
             }
 
-            // Carrega dados dos usuários
+            // Carrega dados dos clientes e lojas
             PersistenciaUtils.carregarClientesDat();
             PersistenciaUtils.carregarLojasDat();
 
@@ -71,7 +71,7 @@ public class TelaLogin {
                 }
             }
 
-            // Se nenhum login for válido, mostra alerta
+            // Se chegar até aqui (nenhum login válido), mostra alerta
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Erro de Login");
             alerta.setHeaderText(null);
